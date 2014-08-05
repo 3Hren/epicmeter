@@ -4,7 +4,7 @@ SET(PROJECT ticktack)
 SET(CMAKE_BUILD_TYPE "Release")
 
 INCLUDE_DIRECTORIES(
-    ${CMAKE_SOURCE_DIR}/include
+    include
 )
 
 ADD_LIBRARY(ticktack SHARED
