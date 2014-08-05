@@ -7,7 +7,7 @@
     #define HAVE_AT_LEAST_GCC46
 #endif
 
-#if !defined(__clang__) && !HAVE_AT_LEAST_GCC46
+#if !defined(__clang__) && !defined(HAVE_AT_LEAST_GCC46)
     #define nullptr __null
 #endif
 
