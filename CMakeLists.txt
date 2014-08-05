@@ -7,6 +7,8 @@ INCLUDE_DIRECTORIES(
     include
 )
 
+PROJECT(${PROJECT})
+
 ADD_LIBRARY(ticktack SHARED
     src/benchmark
     src/printer/table

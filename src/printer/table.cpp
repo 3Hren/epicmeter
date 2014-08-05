@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "ticktack/benchmark.hpp"
 #include "ticktack/printer/table.hpp"
 
