@@ -70,7 +70,7 @@ class benchmarker_t {
 private:
     options_t options;
     std::unordered_map<std::string, suite_t> suites;
-    std::unique_ptr<watcher_t> printer;
+    std::unique_ptr<watcher_t> watcher;
 
 public:
     static benchmarker_t& instance();
@@ -78,6 +78,8 @@ public:
     void add_baseline(std::string suite, std::string name, runner::measurer_t function);
     void add_relative(std::string suite, std::string name, runner::measurer_t function);
     void add(std::string suite, std::string name, runner::measurer_t function);
+
+    void set_watcher(std::unique_ptr<watcher_t> watcher);
 
     void run();
     void run(suite_t& suite);

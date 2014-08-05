@@ -73,12 +73,16 @@ benchmarker_t::add(std::string suite,
     suites[suite].benchmarks.emplace_back(runnable_t { name, function });
 }
 
+void benchmarker_t::set_watcher(std::unique_ptr<watcher_t> watcher) {
+    this->watcher = std::move(watcher);
+}
+
 void benchmarker_t::run() {
-    printer->set_up();
+    watcher->set_up();
     for (auto it = suites.begin(); it != suites.end(); ++it) {
-        printer->suite_start(it->first, it->second);
+        watcher->suite_start(it->first, it->second);
         run(it->second);
-        printer->suite_complete(it->first);
+        watcher->suite_complete(it->first);
     }
 }
 
@@ -90,16 +94,16 @@ void benchmarker_t::run(suite_t &suite) {
 
     if (suite.batch) {
         auto info_b = detail::analyze(run(it->fn));
-        printer->relative_pass(it->name, info_b, info_b);
+        watcher->relative_pass(it->name, info_b, info_b);
 
         while (++it != suite.benchmarks.end()) {
             auto info = detail::analyze(run(it->fn));
-            printer->relative_pass(it->name, info_b, info);
+            watcher->relative_pass(it->name, info_b, info);
         }
     } else {
         do {
             auto info = detail::analyze(run(it->fn));
-            printer->pass(it->name, info);
+            watcher->pass(it->name, info);
         } while (++it != suite.benchmarks.end());
     }
 }
@@ -154,7 +158,7 @@ benchmarker_t::run(const runner::measurer_t& fn) const {
 }
 
 benchmarker_t::benchmarker_t()  :
-    printer(new table_printer_t())
+    watcher(new table_printer_t())
 {
     options.time.min = 1e8;
     options.time.max = 1e8;
