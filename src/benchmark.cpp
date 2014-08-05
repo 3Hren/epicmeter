@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/min.hpp>
 
