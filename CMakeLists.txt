@@ -12,6 +12,7 @@ PROJECT(${PROJECT})
 ADD_LIBRARY(ticktack SHARED
     src/benchmark
     src/printer/table
+    src/printer/json
 )
 
 ADD_LIBRARY(ticktack-main
