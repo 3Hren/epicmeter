@@ -13,7 +13,7 @@ public:
 
     virtual
     void
-    set_up() = 0;
+    start() = 0;
 
     virtual
     void
@@ -29,7 +29,11 @@ public:
 
     virtual
     void
-    suite_complete(const std::string& suite) = 0;
+    suite_complete(const std::string& suite, long long elapsed) = 0;
+
+    virtual
+    void
+    complete(long long elapsed) = 0;
 };
 
 }

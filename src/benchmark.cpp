@@ -78,15 +78,28 @@ void benchmarker_t::set_watcher(std::unique_ptr<watcher_t> watcher) {
 }
 
 void benchmarker_t::run() {
-    watcher->set_up();
+    using std::chrono::duration_cast;
+
+    clock_type clock;
+    auto start = clock.now();
+    watcher->start();
     for (auto it = suites.begin(); it != suites.end(); ++it) {
+        auto suite_start = clock.now();
         watcher->suite_start(it->first, it->second);
         run(it->second);
-        watcher->suite_complete(it->first);
+        auto suite_elapsed = clock.now();
+        watcher->suite_complete(
+            it->first,
+            duration_cast<std::chrono::nanoseconds>(suite_elapsed - suite_start).count()
+        );
     }
+    auto elapsed = clock.now();
+    watcher->complete(
+        duration_cast<std::chrono::nanoseconds>(elapsed - start).count()
+    );
 }
 
-void benchmarker_t::run(suite_t &suite) {
+void benchmarker_t::run(suite_t& suite) {
     auto it = suite.benchmarks.begin();
     if (it == suite.benchmarks.end()) {
         return;

@@ -99,7 +99,7 @@ relative_percent(double baseline, double n) {
 
 } // namespace ticktack
 
-void table_printer_t::set_up() {
+void table_printer_t::start() {
     printf(
        "[==========] GLOBAL BENCHMARK ENVIRONMENT SET-UP.%27s %12s %12s\n",
        "[RELATIVE]",
@@ -140,7 +140,12 @@ void table_printer_t::pass(const std::string& name, const analyzed_t& info) {
     fflush(stdout);
 }
 
-void table_printer_t::suite_complete(const std::string&) {
+void table_printer_t::suite_complete(const std::string&, long long elapsed) {
     printf("[----------]\n");
+    fflush(stdout);
+}
+
+void table_printer_t::complete(long long elapsed) {
+    printf("[==========]\n");
     fflush(stdout);
 }
