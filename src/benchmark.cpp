@@ -174,7 +174,7 @@ benchmarker_t::benchmarker_t()  :
     watcher(new table_printer_t())
 {
     options.time.min = 1e8;
-    options.time.max = 1e8;
+    options.time.max = 1e9;
     options.iters = iteration_type(1);
 }
 
