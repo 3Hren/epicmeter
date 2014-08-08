@@ -79,6 +79,7 @@ public:
     void add_relative(std::string suite, std::string name, runner::measurer_t function);
     void add(std::string suite, std::string name, runner::measurer_t function);
 
+    void set_options(options_t options);
     void set_watcher(std::unique_ptr<watcher_t> watcher);
 
     void run();

@@ -73,6 +73,10 @@ benchmarker_t::add(std::string suite,
     suites[suite].benchmarks.emplace_back(runnable_t { name, function });
 }
 
+void benchmarker_t::set_options(options_t options) {
+    this->options = std::move(options);
+}
+
 void benchmarker_t::set_watcher(std::unique_ptr<watcher_t> watcher) {
     this->watcher = std::move(watcher);
 }
