@@ -272,16 +272,16 @@ struct benchmark_bind_t {
 #define TT_REGISTRATOR_NAME(__suite__, __benchname__) \
     __suite__##_##__benchname__
 
-#define TT_REGISTRATOR(__target__, __suite__, __benchname__, _return_type__, __param_type__, __param_name__, ...) \
+#define TT_REGISTRATOR(__target__, __suite__, __benchname__, __return_type__, __param_type__, __param_name__, ...) \
     struct TT_FUNCTOR_CLASSNAME(__suite__, __benchname__) { \
-        _return_type__ operator()(__param_type__ __param_name__) const; \
+        __return_type__ operator()(__param_type__ __param_name__) const; \
     }; \
     static ::ticktack::registrator::__target__ TT_REGISTRATOR_NAME(__suite__, __benchname__)( \
         #__suite__, \
         #__benchname__, \
         TT_FUNCTOR_CLASSNAME(__suite__, __benchname__)() \
     ); \
-    _return_type__ TT_FUNCTOR_CLASSNAME(__suite__, __benchname__)::operator()(__param_type__ __param_name__) const
+    __return_type__ TT_FUNCTOR_CLASSNAME(__suite__, __benchname__)::operator()(__param_type__ __param_name__) const
 
 #define BENCHMARK(__suite__, __benchname__, ...) \
     TT_REGISTRATOR( \
@@ -299,7 +299,7 @@ struct benchmark_bind_t {
         __suite__, \
         __benchname__, \
         void, \
-        TT_ONE_OR_NONE(iteration_type, ##__VA_ARGS__), \
+        TT_ONE_OR_NONE(::ticktack::iteration_type, ##__VA_ARGS__), \
         __VA_ARGS__ \
     )
 
@@ -318,8 +318,8 @@ struct benchmark_bind_t {
         benchmark_t, \
         __suite__, \
         __benchname__, \
-        iteration_type, \
-        TT_ONE_OR_NONE(iteration_type, ##__VA_ARGS__), \
+        ::ticktack::iteration_type, \
+        TT_ONE_OR_NONE(::ticktack::iteration_type, ##__VA_ARGS__), \
         __VA_ARGS__ \
     )
 
