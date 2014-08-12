@@ -90,7 +90,7 @@ static
 inline
 double
 relative_percent(double baseline, double n) {
-    return 100 * (2 - n / baseline);
+    return 100 * n / baseline;
 }
 
 } // namespace candy
