@@ -2,6 +2,8 @@
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics/min.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 
 #include "ticktack/benchmark.hpp"
 #include "ticktack/printer/table.hpp"
@@ -26,14 +28,30 @@ analyze(const std::vector<result_t>& results) {
             boost::accumulators::tag::min
         >
     > acc;
+
     std::for_each(
         times.begin(),
         times.end(),
         std::bind(std::ref(acc), std::placeholders::_1)
     );
 
+    boost::accumulators::accumulator_set<
+        double,
+        boost::accumulators::features<
+            boost::accumulators::tag::mean,
+            boost::accumulators::tag::variance
+        >
+    > acci;
+
+    for (auto it = results.begin(); it != results.end(); ++it) {
+        double ips = 1e9 / ((double)it->total / it->iters.v);
+        acci(ips);
+    }
+
     analyzed_t analyzed {
-        boost::accumulators::extract::min(acc)
+        boost::accumulators::extract::min(acc),
+        boost::accumulators::extract::mean(acci),
+        std::sqrt(boost::accumulators::extract::variance(acci))
     };
     return analyzed;
 }

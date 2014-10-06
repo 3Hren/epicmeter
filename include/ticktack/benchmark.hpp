@@ -28,6 +28,8 @@ struct result_t {
 
 struct analyzed_t {
     double min;
+    double mean;
+    double stddev;
 };
 
 namespace runner {
