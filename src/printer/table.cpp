@@ -4,7 +4,7 @@
 #include "ticktack/printer/table.hpp"
 
 #ifndef TICKTACK_OUTPUT_STREAM
-#define TICKTACK_OUTPUT_STREAM stderr
+#define TICKTACK_OUTPUT_STREAM stdout
 #endif
 
 using namespace ticktack;
