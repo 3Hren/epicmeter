@@ -3,6 +3,10 @@
 #include "ticktack/benchmark.hpp"
 #include "ticktack/printer/table.hpp"
 
+#ifndef TICKTACK_OUTPUT_STREAM
+#define TICKTACK_OUTPUT_STREAM stderr
+#endif
+
 using namespace ticktack;
 
 namespace ticktack {
@@ -100,52 +104,59 @@ relative_percent(double baseline, double n) {
 } // namespace ticktack
 
 void table_printer_t::start() {
-    printf(
-       "[==========] GLOBAL BENCHMARK ENVIRONMENT SET-UP.%27s %12s %12s\n",
-       "[RELATIVE]",
-       "[TIME/ITER]",
-       "[ITERS/SEC]"
+    fprintf(
+        TICKTACK_OUTPUT_STREAM,
+        "[==========] GLOBAL BENCHMARK ENVIRONMENT SET-UP.%27s %12s %12s\n",
+        "[RELATIVE]",
+        "[TIME/ITER]",
+        "[ITERS/SEC]"
     );
-    fflush(stdout);
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
 
 void table_printer_t::suite_start(const std::string& name, const suite_t& suite) {
-    printf(
+    fprintf(
+        TICKTACK_OUTPUT_STREAM,
         "[----------] %d benchmark from %s\n",
         static_cast<int>(suite.benchmarks.size()),
         name.c_str()
     );
-    fflush(stdout);
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
 
 void table_printer_t::relative_pass(const std::string& name,
                                     const analyzed_t& info_b,
                                     const analyzed_t& info)
 {
-    printf("[ RELATIVE ] %-50s %10.2f%% %12s %12.1f\n",
+    fprintf(
+        TICKTACK_OUTPUT_STREAM,
+        "[ RELATIVE ] %-50s %10.2f%% %12s %12.1f\n",
         name.c_str(),
         detail::candy::relative_percent(info_b.min, info.min),
         detail::candy::time(info.min / 1e9, 3).c_str(),
         1e9 / info.min
     );
-    fflush(stdout);
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
 
 void table_printer_t::pass(const std::string& name, const analyzed_t& info) {
-    printf("[ ABSOLUTE ] %-50s             %12s %12.1f\n",
+    fprintf(
+        TICKTACK_OUTPUT_STREAM,
+        "[ ABSOLUTE ] %-50s             %12s %12.1f\n",
         name.c_str(),
         detail::candy::time(info.min / 1e9, 3).c_str(),
         1e9 / info.min
     );
-    fflush(stdout);
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
 
 void table_printer_t::suite_complete(const std::string&, long long elapsed) {
-    printf("[----------]\n");
-    fflush(stdout);
+    fprintf(TICKTACK_OUTPUT_STREAM, "[----------]\n");
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
 
-void table_printer_t::complete(long long elapsed) {
-    printf("[==========]\n");
-    fflush(stdout);
+void table_printer_t::complete(long long) {
+    fprintf(TICKTACK_OUTPUT_STREAM, "[==========]\n");
+    fflush(TICKTACK_OUTPUT_STREAM);
 }
+
