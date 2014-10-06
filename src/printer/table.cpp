@@ -109,7 +109,7 @@ void table_printer_t::start() {
         "[==========] GLOBAL BENCHMARK ENVIRONMENT SET-UP.%27s %12s %12s\n",
         "[RELATIVE]",
         "[TIME/ITER]",
-        "[   ITERATIONS/SEC   ]"
+        "[ITERS/SEC]"
     );
     fflush(TICKTACK_OUTPUT_STREAM);
 }
@@ -130,12 +130,11 @@ void table_printer_t::relative_pass(const std::string& name,
 {
     fprintf(
         TICKTACK_OUTPUT_STREAM,
-        "[ RELATIVE ] %-50s %10.2f%% %12s %12.1f (±%-.1f)\n",
+        "[ RELATIVE ] %-50s %10.2f%% %12s %12.1f\n",
         name.c_str(),
         detail::candy::relative_percent(info_b.min, info.min),
         detail::candy::time(info.min / 1e9, 3).c_str(),
-        1e9 / info.min,
-        info.stddev
+        1e9 / info.min
     );
     fflush(TICKTACK_OUTPUT_STREAM);
 }
@@ -143,11 +142,10 @@ void table_printer_t::relative_pass(const std::string& name,
 void table_printer_t::pass(const std::string& name, const analyzed_t& info) {
     fprintf(
         TICKTACK_OUTPUT_STREAM,
-        "[ ABSOLUTE ] %-50s             %12s %12.1f (±%-.1f)\n",
+        "[ ABSOLUTE ] %-50s             %12s %12.1f\n",
         name.c_str(),
         detail::candy::time(info.min / 1e9, 3).c_str(),
-        1e9 / info.min,
-        info.stddev
+        1e9 / info.min
     );
     fflush(TICKTACK_OUTPUT_STREAM);
 }
