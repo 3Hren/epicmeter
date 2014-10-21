@@ -14,9 +14,12 @@ INCLUDE_DIRECTORIES(
     include
 )
 
+FILE(GLOB_RECURSE HEADERS . include/*.hpp)
+
 PROJECT(${PROJECT})
 
 ADD_LIBRARY(ticktack SHARED
+    ${HEADERS}
     src/benchmark
     src/printer/table
     src/printer/json
