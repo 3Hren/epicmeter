@@ -270,59 +270,28 @@ struct benchmark_bind_t {
 #define TT_THIRD(a, b, ...) __VA_ARGS__
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)
 
-#define TT_FUNCTOR_CLASSNAME(suite) \
-    BOOST_PP_SEQ_CAT((TT_REGISTRATOR_NAME(suite))(_t))
+#define TT_FUNCTOR_CLASSNAME(suite) BOOST_PP_SEQ_CAT((TT_REGISTRATOR_NAME(suite))(_t))
+#define TT_ITERTYPE ::ticktack::iteration_type
 
-#define TT_REGISTRATOR_TYPE(target) \
-    ::ticktack::registrator::target
+#define TT_REGISTRATOR_TYPE(target) ::ticktack::registrator::target
+#define TT_REGISTRATOR_NAME(suite) BOOST_PP_SEQ_CAT((suite)(__LINE__))
 
-#define TT_REGISTRATOR_NAME(suite) \
-    BOOST_PP_SEQ_CAT((suite)(__LINE__))
-
-#define TT_REGISTRATOR(target, ns, cs, R, __param_type__, __param_name__, ...) \
-    struct TT_FUNCTOR_CLASSNAME(ns) { R operator()(__param_type__ __param_name__) const; }; \
+#define TT_REGISTRATOR(target, ns, cs, R, PT, PN, ...) \
+    struct TT_FUNCTOR_CLASSNAME(ns) { R operator()(PT PN) const; }; \
     static TT_REGISTRATOR_TYPE(target) TT_REGISTRATOR_NAME(ns)(#ns, #cs, TT_FUNCTOR_CLASSNAME(ns)()); \
-    R TT_FUNCTOR_CLASSNAME(ns)::operator()(__param_type__ __param_name__) const
+    R TT_FUNCTOR_CLASSNAME(ns)::operator()(PT PN) const
 
 #define BENCHMARK(ns, cs, ...) \
-    TT_REGISTRATOR( \
-        benchmark_t, \
-        ns, \
-        cs, \
-        void, \
-        TT_ONE_OR_NONE(iteration_type, ##__VA_ARGS__), \
-        __VA_ARGS__ \
-    )
+    TT_REGISTRATOR(benchmark_t, ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #define BENCHMARK_BASELINE(ns, cs, ...) \
-    TT_REGISTRATOR( \
-        baseline_t, \
-        ns, \
-        cs, \
-        void, \
-        TT_ONE_OR_NONE(::ticktack::iteration_type, ##__VA_ARGS__), \
-        __VA_ARGS__ \
-    )
+    TT_REGISTRATOR(baseline_t,  ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #define BENCHMARK_RELATIVE(ns, cs, ...) \
-    TT_REGISTRATOR( \
-        relative_t, \
-        ns, \
-        cs, \
-        void, \
-        TT_ONE_OR_NONE(iteration_type, ##__VA_ARGS__), \
-        __VA_ARGS__ \
-    )
+    TT_REGISTRATOR(relative_t,  ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #define BENCHMARK_RETURN(ns, cs, ...) \
-    TT_REGISTRATOR( \
-        benchmark_t, \
-        ns, \
-        cs, \
-        ::ticktack::iteration_type, \
-        TT_ONE_OR_NONE(::ticktack::iteration_type, ##__VA_ARGS__), \
-        __VA_ARGS__ \
-    )
+    TT_REGISTRATOR(benchmark_t, ns, cs, TT_ITERTYPE, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #ifndef TT_ANONYMOUS_VARIABLE
 #   define TT_CONCATENATE_IMPL(x, y) x##y
@@ -335,10 +304,6 @@ struct benchmark_bind_t {
 #endif
 #define TT_STRINGIZE(x) #x
 
-#define BENCHMARK_BOUND(__suite__, __fn__, ...) \
-    static ::ticktack::registrator::benchmark_bind_t TT_ANONYMOUS_VARIABLE(__suite__##__fn__)( \
-        #__suite__, \
-        #__fn__"("#__VA_ARGS__")", \
-        __fn__, \
-        __VA_ARGS__ \
-    )
+#define TT_BIND_TYPE ::ticktack::registrator::benchmark_bind_t
+#define BENCHMARK_BOUND(ns, fn, ...) \
+    static TT_BIND_TYPE TT_ANONYMOUS_VARIABLE(ns##fn)(#ns, #fn"("#__VA_ARGS__")", fn, __VA_ARGS__)
