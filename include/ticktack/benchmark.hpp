@@ -5,6 +5,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include <boost/preprocessor.hpp>
+
 #include "ticktack/compiler.hpp"
 #include "ticktack/traits.hpp"
 #include "ticktack/types.hpp"
@@ -269,10 +271,10 @@ struct benchmark_bind_t {
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)
 
 #define TT_FUNCTOR_CLASSNAME(__suite__, __benchname__) \
-    __suite__##_##__benchname__##_t
+    BOOST_PP_SEQ_CAT((__suite__)(__LINE__)(_t))
 
 #define TT_REGISTRATOR_NAME(__suite__, __benchname__) \
-    __suite__##_##__benchname__
+    BOOST_PP_SEQ_CAT((__suite__)(__LINE__))
 
 #define TT_REGISTRATOR(__target__, __suite__, __benchname__, __return_type__, __param_type__, __param_name__, ...) \
     struct TT_FUNCTOR_CLASSNAME(__suite__, __benchname__) { \
