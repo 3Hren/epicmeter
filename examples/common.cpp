@@ -16,6 +16,14 @@ BENCHMARK(DatetimeGeneration, strftime) {
 }
 
 //!=============================================================================
+//! Common usage with string test case name.
+BENCHMARK(Increment, "Using: i++") {
+    int i = 0;
+    i++;
+    compiler::do_not_optimize(i);
+}
+
+//!=============================================================================
 //! Baseline support.
 BENCHMARK_BASELINE(VectorRelative, push_back) {
     std::vector<int> v;
