@@ -3,11 +3,17 @@
 #include <cstdlib>
 #include <thread>
 
-#if __GNUC__ == 4 && __GNUC_MINOR__ >= 6
-    #define HAVE_AT_LEAST_GCC46
+#if defined(__GNUC__)
+    #if __GNUC__ == 4 && __GNUC_MINOR__ >= 6
+        #define TT_HAS_AT_LEAST_GCC46
+    #endif
+
+    #if defined(__clang__)
+        #define TT_HAS_CLANG
+    #endif
 #endif
 
-#if !defined(__clang__) && !defined(HAVE_AT_LEAST_GCC46)
+#if !defined(TT_HAS_CLANG) && !defined(TT_HAVE_AT_LEAST_GCC46)
     #define nullptr __null
 #endif
 
