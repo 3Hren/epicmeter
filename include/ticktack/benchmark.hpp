@@ -270,22 +270,22 @@ struct benchmark_bind_t {
 #define TT_THIRD(a, b, ...) __VA_ARGS__
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)
 
-#define TT_FUNCTOR_CLASSNAME(__suite__, __benchname__) \
-    BOOST_PP_SEQ_CAT((__suite__)(__LINE__)(_t))
+#define TT_FUNCTOR_CLASSNAME(suite) \
+    BOOST_PP_SEQ_CAT((TT_REGISTRATOR_NAME(suite))(_t))
 
-#define TT_REGISTRATOR_NAME(__suite__, __benchname__) \
-    BOOST_PP_SEQ_CAT((__suite__)(__LINE__))
+#define TT_REGISTRATOR_NAME(suite) \
+    BOOST_PP_SEQ_CAT((suite)(__LINE__))
 
 #define TT_REGISTRATOR(__target__, __suite__, __benchname__, __return_type__, __param_type__, __param_name__, ...) \
-    struct TT_FUNCTOR_CLASSNAME(__suite__, __benchname__) { \
+    struct TT_FUNCTOR_CLASSNAME(__suite__) { \
         __return_type__ operator()(__param_type__ __param_name__) const; \
     }; \
-    static ::ticktack::registrator::__target__ TT_REGISTRATOR_NAME(__suite__, __benchname__)( \
+    static ::ticktack::registrator::__target__ TT_REGISTRATOR_NAME(__suite__)( \
         #__suite__, \
         #__benchname__, \
-        TT_FUNCTOR_CLASSNAME(__suite__, __benchname__)() \
+        TT_FUNCTOR_CLASSNAME(__suite__)() \
     ); \
-    __return_type__ TT_FUNCTOR_CLASSNAME(__suite__, __benchname__)::operator()(__param_type__ __param_name__) const
+    __return_type__ TT_FUNCTOR_CLASSNAME(__suite__)::operator()(__param_type__ __param_name__) const
 
 #define BENCHMARK(__suite__, __benchname__, ...) \
     TT_REGISTRATOR( \
