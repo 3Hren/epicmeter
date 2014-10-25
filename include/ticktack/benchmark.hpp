@@ -92,7 +92,13 @@ public:
     template<typename Callable>
     builder_t(std::string ns, std::string cs, Callable fn, bool baseline = false) {
         auto& overlord = overlord_t::instance();
-        overlord.add(ns, cs, baseline, detail::wrap(fn));
+        overlord.add(ns, cs, baseline, detail::wrap(typename function_traits<Callable>::function_type(fn)));
+    }
+
+    template<typename R, typename... Args>
+    builder_t(std::string ns, std::string cs, R(&fn)(Args&&...), bool baseline = false) {
+        auto& overlord = overlord_t::instance();
+        overlord.add(ns, cs, baseline, detail::wrap(std::function<R(Args...)>(fn)));
     }
 };
 
