@@ -10,7 +10,6 @@ SET(HEADERS
 
 SET(SOURCES
     common
-    v2
 )
 
 PROJECT(${PROJECT})

@@ -123,7 +123,7 @@ table_t::table_t(std::ostream& stream) :
 void table_t::global(std::size_t count) {
     stream << "[==========] GLOBAL BENCHMARK ENVIRONMENT SET-UP."
            << std::setw(27) << "[RELATIVE] "
-           << "[   TIME/ITER   ] "
+           << "[    TIME/ITER    ] "
            << "[ ITERS/SEC ]"
            << std::endl;
     stream << "[----------] PREPARING " << count << " NAMESPACES ..."
@@ -153,7 +153,7 @@ void table_t::benchmark(const stats_t& stats) {
     stream << "[ ABSOLUTE ] "
            << std::setw(52) << std::left << current
            << std::setw(11) << ""
-           << std::setw(17) << std::right << detail::candy::time(stats.median() / 1e9, (stats.max() - stats.min()) / 1e9)
+           << std::setw(19) << std::right << detail::candy::time(stats.median() / 1e9, (stats.max() - stats.min()) / 1e9)
            << std::setw(14) << std::fixed << std::setprecision(1) << (1e9 / stats.min())
            << std::endl;
 }
@@ -163,7 +163,7 @@ void table_t::benchmark(const stats_t& stats, const stats_t& baseline) {
            << std::setw(52) << std::left << current
            << std::setw(8) << std::right << std::fixed << std::setprecision(1)
            << 100 * baseline.min() / stats.min() << "%  "
-           << std::setw(17) << std::right
+           << std::setw(19) << std::right
            << detail::candy::time(stats.median() / 1e9, (stats.max() - stats.min()) / 1e9)
            << std::setw(14) << std::fixed << std::setprecision(1)
            << (1e9 / stats.min())

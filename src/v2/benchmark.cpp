@@ -89,9 +89,10 @@ stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn)
 
     stats_t prev;
     while (true) {
-//        std::cout << "N=" << n.v << std::endl;
         for (auto it = samples.begin(); it != samples.end(); ++it) {
-            *it = npi(fn, n);
+            auto v = npi(fn, n);
+//            std::cout << v << std::endl;
+            *it = v;
         }
 
         auto curr = stats_t(samples);
@@ -123,6 +124,13 @@ single(std::function<void()> fn) {
 
 inline
 iteration_type
+pass(std::function<void(iteration_type)> fn, iteration_type times) {
+    fn(times);
+    return times;
+}
+
+inline
+iteration_type
 repeater(std::function<iteration_type()> fn, iteration_type times) {
     iteration_type iters(0);
     while (times.v-- > 0) {
@@ -137,6 +145,16 @@ repeater(std::function<iteration_type()> fn, iteration_type times) {
 std::function<iteration_type(iteration_type)>
 detail::wrap(std::function<iteration_type(iteration_type)> fn) {
     return std::move(fn);
+}
+
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<void(iteration_type)> fn) {
+    return std::bind(&pass, std::move(fn), std::placeholders::_1);
+}
+
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<iteration_type()> fn) {
+    return std::bind(&repeater, std::move(fn), std::placeholders::_1);
 }
 
 std::function<iteration_type(iteration_type)>

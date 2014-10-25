@@ -22,23 +22,20 @@
 #define BENCHMARK_BASELINE(ns, cs, ...) \
     TT_REGISTRATOR(true,  ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
-//#define BENCHMARK_RELATIVE(ns, cs, ...) \
-//    TT_REGISTRATOR(relative_t,  ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
+#define BENCHMARK_RETURN(ns, cs, ...) \
+    TT_REGISTRATOR(false, ns, cs, TT_ITERTYPE, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
-//#define BENCHMARK_RETURN(ns, cs, ...) \
-//    TT_REGISTRATOR(benchmark_t, ns, cs, TT_ITERTYPE, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
+#ifndef TT_ANONYMOUS_VARIABLE
+#   define TT_CONCATENATE_IMPL(x, y) x##y
+#   define TT_CONCATENATE(x, y) TT_CONCATENATE_IMPL(x, y)
+#   ifdef __COUNTER__
+#       define TT_ANONYMOUS_VARIABLE(str) TT_CONCATENATE(str, __COUNTER__)
+#   else
+#       define TT_ANONYMOUS_VARIABLE(str) TT_CONCATENATE(str, __LINE__)
+#   endif
+#endif
+#define TT_STRINGIZE(x) #x
 
-//#ifndef TT_ANONYMOUS_VARIABLE
-//#   define TT_CONCATENATE_IMPL(x, y) x##y
-//#   define TT_CONCATENATE(x, y) TT_CONCATENATE_IMPL(x, y)
-//#   ifdef __COUNTER__
-//#       define TT_ANONYMOUS_VARIABLE(str) TT_CONCATENATE(str, __COUNTER__)
-//#   else
-//#       define TT_ANONYMOUS_VARIABLE(str) TT_CONCATENATE(str, __LINE__)
-//#   endif
-//#endif
-//#define TT_STRINGIZE(x) #x
-
-//#define TT_BIND_TYPE ::ticktack::registrator::benchmark_bind_t
-//#define BENCHMARK_BOUND(ns, fn, ...) \
-//    static TT_BIND_TYPE TT_ANONYMOUS_VARIABLE(ns##fn)(#ns, #fn"("#__VA_ARGS__")", fn, __VA_ARGS__)
+#define TT_BIND_TYPE ::ticktack::detail::bind_t
+#define BENCHMARK_BOUND(ns, fn, ...) \
+    static TT_BIND_TYPE TT_ANONYMOUS_VARIABLE(ns##fn)(#ns, #fn"("#__VA_ARGS__")", fn, __VA_ARGS__)

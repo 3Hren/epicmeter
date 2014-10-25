@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "ticktack/v2/types.hpp"
+#include "ticktack/v2/traits.hpp"
 #include "ticktack/v2/macro.hpp"
 #include "ticktack/v2/output/mod.hpp"
 #include "ticktack/compiler.hpp"
@@ -80,17 +81,11 @@ namespace detail {
 std::function<iteration_type(iteration_type)>
 wrap(std::function<iteration_type(iteration_type)> fn);
 
-//inline
-//runner::measurer_t
-//wrap(std::function<iteration_type()> fn) {
-//    return runner::measurer_t { runner::repeater_t { std::move(fn) } };
-//}
+std::function<iteration_type(iteration_type)>
+wrap(std::function<iteration_type()> fn);
 
-//inline
-//runner::measurer_t
-//wrap(std::function<void(iteration_type)> fn) {
-//    return runner::measurer_t { runner::pass_t { std::move(fn) } };
-//}
+std::function<iteration_type(iteration_type)>
+wrap(std::function<void(iteration_type)> fn);
 
 std::function<iteration_type(iteration_type)>
 wrap(std::function<void()> fn);
@@ -106,5 +101,62 @@ public:
         overlord.add(ns, cs, baseline, detail::wrap(fn));
     }
 };
+
+namespace detail {
+
+template<typename Callable, class = void>
+struct param_helper_t;
+
+template<typename Callable>
+struct param_helper_t<
+    Callable,
+    typename std::enable_if<
+        !accepts_itercount<Callable>::value && !returns_itercount<Callable>::value
+    >::type
+> {
+    template<typename... Args>
+    static void create(std::string ns, std::string cs, Callable fn, Args&&... a) {
+        std::function<void()> bound = std::bind(std::move(fn), std::forward<Args>(a)...);
+        overlord_t::instance().add(ns,cs, false, detail::wrap(std::move(bound)));
+    }
+};
+
+template<typename Callable>
+struct param_helper_t<
+    Callable,
+    typename std::enable_if<returns_itercount<Callable>::value>::type
+> {
+    template<typename... Args>
+    static void create(std::string ns, std::string cs, Callable fn, Args&&... a) {
+        std::function<iteration_type()> bound = std::bind(std::move(fn), std::forward<Args>(a)...);
+        overlord_t::instance().add(ns, cs, false, detail::wrap(std::move(bound)));
+    }
+};
+
+template<typename Callable>
+struct param_helper_t<
+    Callable,
+    typename std::enable_if<accepts_itercount<Callable>::value>::type
+> {
+    template<typename... Args>
+    static void create(std::string ns, std::string cs, Callable fn, Args&&... a) {
+        std::function<void(iteration_type)> bound = std::bind(
+            std::move(fn),
+            std::placeholders::_1,
+            std::forward<Args>(a)...
+        );
+
+        overlord_t::instance().add(ns, cs, false, detail::wrap(std::move(bound)));
+    }
+};
+
+struct bind_t {
+    template<typename Callable, typename... Args>
+    bind_t(std::string suite, std::string name, Callable fn, Args&&... a) {
+        param_helper_t<Callable>::create(suite, name, fn, std::forward<Args>(a)...);
+    }
+};
+
+} // namespace detail
 
 } // namespace ticktack
