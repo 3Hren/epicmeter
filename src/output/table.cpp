@@ -1,8 +1,9 @@
+#include "ticktack/output/table.hpp"
+
 #include <cmath>
 
 #include <iomanip>
 
-#include "ticktack/output/table.hpp"
 #include "ticktack/compiler.hpp"
 
 using namespace ticktack;

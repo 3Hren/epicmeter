@@ -4,7 +4,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <ticktack/benchmark.hpp>
-//#include <ticktack/printer/json.hpp>
+#include <ticktack/output/json.hpp>
 
 void help(char** argv) {
     std::cout << "Usage: " << argv[0] << " [-nxih]" << std::endl;
@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
             );
             break;
         case 'j':
-//            benchmark.set_watcher(
-//                std::unique_ptr<ticktack::watcher_t>(new ticktack::json_printer_t())
-//            );
+            overlord.output(
+                std::unique_ptr<ticktack::output::printer_t>(new ticktack::output::json_t(std::cerr))
+            );
             break;
         case 'h':
             help(argv);
@@ -58,5 +58,3 @@ int main(int argc, char** argv) {
     overlord.run();
     return 0;
 }
-
-//!@todo: Add +- fields.

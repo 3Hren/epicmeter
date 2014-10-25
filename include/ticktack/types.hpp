@@ -4,9 +4,6 @@
 #include <chrono>
 #include <cstdint>
 
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics.hpp>
-
 namespace ticktack {
 
 typedef std::chrono::high_resolution_clock clock_type;

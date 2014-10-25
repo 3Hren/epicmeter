@@ -23,7 +23,7 @@ ADD_LIBRARY(ticktack SHARED
     src/benchmark
     src/stats
     src/output/table
-#    src/printer/json
+    src/output/json
 )
 
 ADD_LIBRARY(ticktack-main

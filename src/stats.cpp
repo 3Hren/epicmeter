@@ -1,5 +1,8 @@
 #include "ticktack/types.hpp"
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
+
 using namespace ticktack;
 
 stats_t::stats_t(const samples_t& samples) :
