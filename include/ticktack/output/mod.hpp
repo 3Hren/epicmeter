@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ticktack/v2/types.hpp"
+#include "ticktack/types.hpp"
 
 namespace ticktack {
 

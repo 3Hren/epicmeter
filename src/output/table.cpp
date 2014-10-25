@@ -2,7 +2,7 @@
 
 #include <iomanip>
 
-#include "ticktack/v2/output/table.hpp"
+#include "ticktack/output/table.hpp"
 #include "ticktack/compiler.hpp"
 
 using namespace ticktack;

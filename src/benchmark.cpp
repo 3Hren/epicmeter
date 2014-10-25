@@ -1,237 +1,166 @@
-#include <algorithm>
-
-#include <boost/accumulators/accumulators.hpp>
-#include <boost/accumulators/statistics/min.hpp>
-#include <boost/accumulators/statistics/mean.hpp>
-#include <boost/accumulators/statistics/variance.hpp>
-
 #include "ticktack/benchmark.hpp"
-#include "ticktack/printer/table.hpp"
 
-namespace ticktack {
+#include "ticktack/output/table.hpp"
 
-namespace detail {
+#include <iostream>
 
-static
-inline
-analyzed_t
-analyze(const std::vector<result_t>& results) {
-    std::vector<double> times;
-    times.reserve(results.size());
-    for (auto it = results.begin(); it != results.end(); ++it) {
-        times.push_back(double(it->total) / it->iters.v);
-    }
+#include <boost/optional.hpp>
 
-    boost::accumulators::accumulator_set<
-        double,
-        boost::accumulators::features<
-            boost::accumulators::tag::min
-        >
-    > acc;
+using namespace ticktack;
 
-    std::for_each(
-        times.begin(),
-        times.end(),
-        std::bind(std::ref(acc), std::placeholders::_1)
-    );
-
-    boost::accumulators::accumulator_set<
-        double,
-        boost::accumulators::features<
-            boost::accumulators::tag::mean,
-            boost::accumulators::tag::variance
-        >
-    > acci;
-
-    for (auto it = results.begin(); it != results.end(); ++it) {
-        double ips = 1e9 / ((double)it->total / it->iters.v);
-        acci(ips);
-    }
-
-    analyzed_t analyzed {
-        boost::accumulators::extract::min(acc),
-        boost::accumulators::extract::mean(acci),
-        std::sqrt(boost::accumulators::extract::variance(acci))
-    };
-    return analyzed;
-}
-
-} // namespace detail
-
-benchmarker_t& benchmarker_t::instance() {
-    static benchmarker_t self;
-    return self;
-}
-
-void
-benchmarker_t::add_baseline(std::string suite,
-                            std::string name,
-                            runner::measurer_t function)
+overlord_t::overlord_t() :
+    out(new output::table_t(std::cout))
 {
-    BOOST_ASSERT(suites[suite].batch || suites[suite].benchmarks.empty());
-    suites[suite].batch = true;
-    suites[suite].benchmarks.emplace_back(runnable_t { name, function });
+    options_.time.min = 1e8;
+    options_.time.max = 1e9;
+    options_.iters = iteration_type(1);
 }
 
-void
-benchmarker_t::add_relative(std::string suite,
-                            std::string name,
-                            runner::measurer_t function)
-{
-    BOOST_ASSERT(suites[suite].batch && !suites[suite].benchmarks.empty());
-    suites[suite].benchmarks.emplace_back(runnable_t { name, function });
-}
-
-void
-benchmarker_t::add(std::string suite,
-                   std::string name,
-                   runner::measurer_t function)
-{
-    BOOST_ASSERT(!suites[suite].batch);
-    suites[suite].benchmarks.emplace_back(runnable_t { name, function });
-}
-
-void benchmarker_t::set_options(options_t options) {
-    this->options = std::move(options);
-}
-
-void benchmarker_t::set_watcher(std::unique_ptr<watcher_t> watcher) {
-    this->watcher = std::move(watcher);
-}
-
-void benchmarker_t::run() {
-    using std::chrono::duration_cast;
-
-    clock_type clock;
-    auto start = clock.now();
-    watcher->start();
-    for (auto it = suites.begin(); it != suites.end(); ++it) {
-        auto suite_start = clock.now();
-        watcher->suite_start(it->first, it->second);
-        run(it->second);
-        auto suite_elapsed = clock.now();
-        watcher->suite_complete(
-            it->first,
-            duration_cast<std::chrono::nanoseconds>(suite_elapsed - suite_start).count()
-        );
-    }
-    auto elapsed = clock.now();
-    watcher->complete(
-        duration_cast<std::chrono::nanoseconds>(elapsed - start).count()
-    );
-}
-
-void benchmarker_t::run(suite_t& suite) {
-    auto it = suite.benchmarks.begin();
-    if (it == suite.benchmarks.end()) {
-        return;
+void overlord_t::run() {
+    out->global(namespaces.size());
+    for (auto it = namespaces.begin(); it != namespaces.end(); ++it) {
+        run(it->first, it->second);
     }
 
-    if (suite.batch) {
-        auto info_b = detail::analyze(run(it->fn));
-        watcher->relative_pass(it->name, info_b, info_b);
+    out->global(nanosecond_type(1e9));
+}
 
-        while (++it != suite.benchmarks.end()) {
-            auto info = detail::analyze(run(it->fn));
-            watcher->relative_pass(it->name, info_b, info);
+namespace compare_by {
+
+struct baseline {
+    bool operator()(const benchmark_t& lhs, const benchmark_t& rhs) const {
+        return lhs.baseline > rhs.baseline;
+    }
+};
+
+} // namespace comparator
+
+void overlord_t::run(const std::string& name, namespace_t ns) {
+    std::stable_sort(ns.benchmarks.begin(), ns.benchmarks.end(), compare_by::baseline());
+
+    out->package(name, ns.benchmarks.size());
+    auto it = ns.benchmarks.begin();
+
+    if (it != ns.benchmarks.end()) {
+        if (it->baseline) {
+            boost::optional<stats_t> baseline;
+            for (; it != ns.benchmarks.end(); ++it) {
+                run(*it, &baseline);
+            }
+        } else {
+            for (; it != ns.benchmarks.end(); ++it) {
+                run(*it);
+            }
         }
-    } else {
-        do {
-            auto info = detail::analyze(run(it->fn));
-            watcher->pass(it->name, info);
-        } while (++it != suite.benchmarks.end());
     }
+    out->package(nanosecond_type(1e6));
 }
 
-std::vector<result_t>
-benchmarker_t::run(const runner::measurer_t& fn) const {
-    const std::uint32_t epochs = 128;
+void overlord_t::run(const benchmark_t& benchmark) {
+    out->benchmark(benchmark.description);
+    out->benchmark(run(benchmark.fn));
+}
 
-    clock_type clock;
-    auto start = clock.now();
+void overlord_t::run(const benchmark_t& benchmark, boost::optional<stats_t>* baseline) {
+    out->benchmark(benchmark.description);
+    stats_t stats(run(benchmark.fn));
+    if (!baseline->is_initialized()) {
+        *baseline = stats;
+    }
+    out->benchmark(stats, baseline->get());
+}
 
-    std::vector<result_t> results;
-    results.reserve(epochs);
+inline
+double npi(const std::function<iteration_type(iteration_type)>& fn, iteration_type times) {
+    auto started = clock_type::now();
+    auto iters = fn(times);
+    auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - started).count();
 
-    std::uint32_t epoch = 0;
-    while (epoch < epochs) {
-       double min = std::numeric_limits<double>::max();
-       for (iteration_type iter = options.iters;
-            iter.v < std::numeric_limits<iteration_type::value_type>::max();
-            iter.v *= 2)
-       {
-           const result_t result = fn(iter);
-           if (result.total < options.time.min) {
-               continue;
-           }
+    return (double)elapsed / iters.v;
+}
 
-           if (epoch >= results.size()) {
-               results.push_back(result);
-           } else {
-               const double elapsed = double(result.total) / result.iters.v;
-               if (elapsed < min) {
-                   min = elapsed;
-                   results[epoch] = result;
-               }
-           }
+stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn) {
+    std::array<double, 64> samples;
+    std::fill(samples.begin(), samples.end(), 0.0);
 
-           break;
-       }
+    auto start = clock_type::now();
 
-       auto elapsed = clock.now();
-       if (std::chrono::duration_cast<
-               std::chrono::nanoseconds
-           >(elapsed - start).count() >= options.time.max)
-       {
-           break;
-       }
+    iteration_type n(1); //TODO: determine min n hint.
 
-       epoch++;
+    stats_t prev(samples);
+    while (true) {
+        for (auto it = samples.begin(); it != samples.end(); ++it) {
+            auto v = npi(fn, n);
+            *it = v;
+        }
+
+        auto curr = stats_t(samples);
+        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - start).count();
+        if (elapsed > options_.time.min.v &&
+                prev.median_abs_dev_pct() < 1.0
+                && prev.median() - curr.median() < curr.median_abs_dev()) {
+            return curr;
+        }
+
+        if (elapsed >= options_.time.max.v) {
+            return curr;
+        }
+
+        n.v *= 2;
     }
 
-    return results;
+    return prev;
 }
 
-benchmarker_t::benchmarker_t()  :
-    watcher(new table_printer_t())
-{
-    options.time.min = 1e8;
-    options.time.max = 1e9;
-    options.iters = iteration_type(1);
-}
+namespace {
 
-iteration_type runner::single_t::operator()() const {
+inline
+iteration_type
+single(std::function<void()> fn) {
     fn();
     return iteration_type(1);
 }
 
-iteration_type runner::pass_t::operator()(iteration_type times) const {
+inline
+iteration_type
+pass(std::function<void(iteration_type)> fn, iteration_type times) {
     fn(times);
     return times;
 }
 
-iteration_type runner::repeater_t::operator()(iteration_type times) const {
+inline
+iteration_type
+repeater(std::function<iteration_type()> fn, iteration_type times) {
     iteration_type iters(0);
     while (times.v-- > 0) {
-        iters.v += fn().v;
+        iters += fn();
     }
 
     return iters;
 }
 
-result_t runner::measurer_t::operator()(iteration_type times) const {
-    result_t result;
+} // namespace
 
-    clock_type clock;
-    auto start = clock.now();
-    result.iters = fn(times);
-    auto elapsed = clock.now();
-
-    result.total = std::chrono::duration_cast<
-        std::chrono::nanoseconds
-    >(elapsed - start).count();
-
-    return result;
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<iteration_type(iteration_type)> fn) {
+    return std::move(fn);
 }
 
-} // namespace ticktack
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<void(iteration_type)> fn) {
+    return std::bind(&pass, std::move(fn), std::placeholders::_1);
+}
+
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<iteration_type()> fn) {
+    return std::bind(&repeater, std::move(fn), std::placeholders::_1);
+}
+
+std::function<iteration_type(iteration_type)>
+detail::wrap(std::function<void()> fn) {
+    return std::bind(
+        &repeater,
+        static_cast<std::function<iteration_type()>>(std::bind(&single, std::move(fn))),
+        std::placeholders::_1
+    );
+}

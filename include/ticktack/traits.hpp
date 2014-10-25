@@ -4,7 +4,7 @@
 #include <tuple>
 #include <utility>
 
-#include "ticktack/v2/types.hpp"
+#include "ticktack/types.hpp"
 
 namespace ticktack {
 

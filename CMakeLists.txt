@@ -20,8 +20,8 @@ PROJECT(${PROJECT})
 
 ADD_LIBRARY(ticktack SHARED
     ${HEADERS}
-    src/v2/benchmark
-    src/v2/output/table
+    src/benchmark
+    src/output/table
 #    src/printer/json
 )
 

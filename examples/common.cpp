@@ -1,6 +1,6 @@
 #include <time.h>
 
-#include <ticktack/v2/benchmark.hpp>
+#include <ticktack/benchmark.hpp>
 
 using namespace ticktack;
 

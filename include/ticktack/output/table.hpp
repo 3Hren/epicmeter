@@ -2,7 +2,7 @@
 
 #include <ostream>
 
-#include "ticktack/v2/output/mod.hpp"
+#include "ticktack/output/mod.hpp"
 
 namespace ticktack {
 

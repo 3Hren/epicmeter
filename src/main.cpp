@@ -3,7 +3,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <ticktack/v2/benchmark.hpp>
+#include <ticktack/benchmark.hpp>
 //#include <ticktack/printer/json.hpp>
 
 void help(char** argv) {
