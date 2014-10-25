@@ -25,44 +25,28 @@ struct options_t {
     iteration_type iters;
 };
 
-class benchmark_t {
-public:
-    bool baseline;
-    std::string description;
-    std::function<iteration_type(iteration_type)> fn;
-};
-
-class namespace_t {
-public:
-    std::vector<benchmark_t> benchmarks;
-};
+class namespace_t;
+class benchmark_t;
 
 class overlord_t {
-    std::unordered_map<std::string, namespace_t> namespaces;
-
-    options_t options_;
-    std::unique_ptr<output::printer_t> out;
+    class impl;
+    std::unique_ptr<impl> d;
 
 public:
+    ~overlord_t();
+
     static overlord_t& instance() {
         static overlord_t self;
         return self;
     }
 
-    void output(std::unique_ptr<output::printer_t> output) {
-        this->out = std::move(output);
-    }
+    void output(std::unique_ptr<output::printer_t> output);
+    void options(options_t options);
 
-    void options(options_t options) {
-        this->options_ = options;
-    }
-
-    void add(std::string ns, std::string cs, bool baseline, std::function<iteration_type(iteration_type)> fn) {
-        namespaces[ns].benchmarks.push_back(benchmark_t { baseline, cs, fn });
-    }
+    void add(std::string ns, std::string cs, bool baseline, std::function<iteration_type(iteration_type)> fn);
 
     void run();
-    void run(const std::string& name, namespace_t ns);
+    void run(const std::string& name, namespace_t&& ns);
     void run(const benchmark_t& benchmark);
     void run(const benchmark_t& benchmark, boost::optional<stats_t>* baseline);
     stats_t run(const std::function<iteration_type(iteration_type)>& fn);

@@ -9,6 +9,8 @@
 
 namespace ticktack {
 
+typedef std::chrono::high_resolution_clock clock_type;
+
 struct nanosecond_type {
     typedef std::uint64_t value_type;
 
@@ -17,8 +19,6 @@ struct nanosecond_type {
     nanosecond_type() : v(0) {}
     nanosecond_type(value_type v) : v(v) {}
 };
-
-typedef std::chrono::high_resolution_clock clock_type;
 
 struct iteration_type {
     typedef std::uint64_t value_type;
