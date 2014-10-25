@@ -3,8 +3,8 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <ticktack/benchmark.hpp>
-#include <ticktack/printer/json.hpp>
+#include <ticktack/v2/benchmark.hpp>
+//#include <ticktack/printer/json.hpp>
 
 void help(char** argv) {
     std::cout << "Usage: " << argv[0] << " [-nxih]" << std::endl;
@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     options.iters = ticktack::iteration_type(1);
 
     int opt = 0;
-    auto& benchmark = ticktack::benchmarker_t::instance();
+    auto& overlord = ticktack::overlord_t::instance();
 
     while ((opt = getopt(argc, argv, "n:x:i:h:j")) != EOF) {
         switch (opt) {
@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
             );
             break;
         case 'j':
-            benchmark.set_watcher(
-                std::unique_ptr<ticktack::watcher_t>(new ticktack::json_printer_t())
-            );
+//            benchmark.set_watcher(
+//                std::unique_ptr<ticktack::watcher_t>(new ticktack::json_printer_t())
+//            );
             break;
         case 'h':
             help(argv);
@@ -54,8 +54,8 @@ int main(int argc, char** argv) {
         }
     }
 
-    benchmark.set_options(options);
-    benchmark.run();
+    overlord.options(options);
+    overlord.run();
     return 0;
 }
 
