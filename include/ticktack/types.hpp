@@ -34,72 +34,24 @@ struct iteration_type {
     }
 };
 
-struct stats_t {
+class stats_t {
+public:
     enum { size = 64 };
-
     typedef std::array<double, size> samples_t;
 
+private:
     samples_t samples;
 
-    explicit stats_t(const samples_t& samples) :
-        samples(samples)
-    {}
+public:
+    explicit stats_t(const samples_t& samples);
 
-    double median_abs_dev() const {
-        const double median = this->median();
-        std::vector<double> abs_devs;
-        for (auto it = samples.begin(); it != samples.end(); ++it) {
-            abs_devs.push_back(std::abs(median - *it));
-        }
+    double median() const;
+    double median(const samples_t& samples) const;
+    double median_abs_dev() const;
+    double median_abs_dev_pct() const;
 
-        return 1.4826 * this->median(abs_devs);
-    }
-
-    double median_abs_dev_pct() const {
-        return (median_abs_dev() / median()) * 100.0;
-    }
-
-    double median() const {
-        return median(samples);
-    }
-
-    template<class Collection>
-    double median(const Collection& samples) const {
-        boost::accumulators::accumulator_set<
-            double,
-            boost::accumulators::stats<
-                boost::accumulators::tag::median
-            >
-        > acc;
-
-        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
-
-        return boost::accumulators::median(acc);
-    }
-
-    double max() const {
-        boost::accumulators::accumulator_set<
-            double,
-            boost::accumulators::stats<
-                boost::accumulators::tag::max
-            >
-        > acc;
-        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
-
-        return boost::accumulators::max(acc);
-    }
-
-    double min() const {
-        boost::accumulators::accumulator_set<
-            double,
-            boost::accumulators::stats<
-                boost::accumulators::tag::min
-            >
-        > acc;
-        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
-
-        return boost::accumulators::min(acc);
-    }
+    double min() const;
+    double max() const;
 };
 
 } // namespace ticktack
