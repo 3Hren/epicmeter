@@ -9,7 +9,7 @@ SET(HEADERS
 )
 
 SET(SOURCES
-#    common
+    common
     v2
 )
 

@@ -7,7 +7,9 @@
 #include <unordered_map>
 
 #include "ticktack/v2/types.hpp"
+#include "ticktack/v2/macro.hpp"
 #include "ticktack/v2/output/mod.hpp"
+#include "ticktack/compiler.hpp"
 
 namespace boost { template<typename> class optional; }
 
