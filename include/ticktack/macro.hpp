@@ -5,25 +5,24 @@
 #define TT_THIRD(a, b, ...) __VA_ARGS__
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)
 
-#define TT_FUNCTOR_CLASSNAME(suite) BOOST_PP_SEQ_CAT((TT_REGISTRATOR_NAME(suite))(_t))
+#define TT_FUNCTOR_CLASSNAME(reg) BOOST_PP_SEQ_CAT((reg)(_t))
 #define TT_ITERTYPE ::ticktack::iteration_type
 
 #define TT_REGISTRATOR_TYPE ::ticktack::builder_t
-#define TT_REGISTRATOR_NAME(suite) BOOST_PP_SEQ_CAT((suite)(__LINE__))
 
-#define TT_REGISTRATOR(baseline, ns, cs, R, PT, PN, ...) \
-    struct TT_FUNCTOR_CLASSNAME(ns) { R operator()(PT PN) const; }; \
-    static TT_REGISTRATOR_TYPE TT_REGISTRATOR_NAME(ns)(#ns, #cs, TT_FUNCTOR_CLASSNAME(ns)(), baseline); \
-    R TT_FUNCTOR_CLASSNAME(ns)::operator()(PT PN) const
+#define TT_REGISTRATOR(baseline, reg, ns, cs, R, PT, PN, ...) \
+    struct TT_FUNCTOR_CLASSNAME(reg) { R operator()(PT PN) const; }; \
+    static TT_REGISTRATOR_TYPE reg(#ns, #cs, TT_FUNCTOR_CLASSNAME(reg)(), baseline); \
+    R TT_FUNCTOR_CLASSNAME(reg)::operator()(PT PN) const
 
 #define BENCHMARK(ns, cs, ...) \
-    TT_REGISTRATOR(false, ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
+    TT_REGISTRATOR(false, TT_ANONYMOUS_VARIABLE(ns), ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #define BENCHMARK_BASELINE(ns, cs, ...) \
-    TT_REGISTRATOR(true,  ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
+    TT_REGISTRATOR(true, TT_ANONYMOUS_VARIABLE(ns), ns, cs, void, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #define BENCHMARK_RETURN(ns, cs, ...) \
-    TT_REGISTRATOR(false, ns, cs, TT_ITERTYPE, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
+    TT_REGISTRATOR(false, TT_ANONYMOUS_VARIABLE(ns), ns, cs, TT_ITERTYPE, TT_ONE_OR_NONE(TT_ITERTYPE, ##__VA_ARGS__), __VA_ARGS__)
 
 #ifndef TT_ANONYMOUS_VARIABLE
 #   define TT_CONCATENATE_IMPL(x, y) x##y
