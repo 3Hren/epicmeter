@@ -4,15 +4,15 @@
 #include <vector>
 #include <unordered_map>
 
-#include "ticktack/compiler.hpp"
-#include "ticktack/macro.hpp"
-#include "ticktack/output/mod.hpp"
-#include "ticktack/traits.hpp"
-#include "ticktack/types.hpp"
+#include "epicmeter/compiler.hpp"
+#include "epicmeter/macro.hpp"
+#include "epicmeter/output/mod.hpp"
+#include "epicmeter/traits.hpp"
+#include "epicmeter/types.hpp"
 
 namespace boost { template<typename> class optional; }
 
-namespace ticktack {
+namespace epicmeter {
 
 struct options_t {
     struct {
@@ -141,4 +141,4 @@ struct bind_t {
 
 } // namespace detail
 
-} // namespace ticktack
+} // namespace epicmeter

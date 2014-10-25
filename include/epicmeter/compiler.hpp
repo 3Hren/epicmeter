@@ -17,7 +17,7 @@
     #define nullptr __null
 #endif
 
-namespace ticktack {
+namespace epicmeter {
 
 namespace compiler {
 
@@ -32,4 +32,4 @@ void do_not_optimize(T&& v) {
 
 } // namespace compiler
 
-} // namespace ticktack
+} // namespace epicmeter

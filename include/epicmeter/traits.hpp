@@ -4,9 +4,9 @@
 #include <tuple>
 #include <utility>
 
-#include "ticktack/types.hpp"
+#include "epicmeter/types.hpp"
 
-namespace ticktack {
+namespace epicmeter {
 
 template<typename T>
 struct function_traits;
@@ -64,4 +64,4 @@ struct returns_itercount {
         >::value;
 };
 
-} // namespace ticktack
+} // namespace epicmeter

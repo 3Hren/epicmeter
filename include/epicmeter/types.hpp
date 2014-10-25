@@ -4,7 +4,7 @@
 #include <chrono>
 #include <cstdint>
 
-namespace ticktack {
+namespace epicmeter {
 
 typedef std::chrono::high_resolution_clock clock_type;
 
@@ -51,4 +51,4 @@ public:
     double max() const;
 };
 
-} // namespace ticktack
+} // namespace epicmeter

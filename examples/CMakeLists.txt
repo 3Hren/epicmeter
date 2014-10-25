@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET(PROJECT ticktack-example)
+SET(PROJECT epicmeter-example)
 
-ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/.. ${CMAKE_BINARY_DIR}/ticktack)
+ADD_SUBDIRECTORY(${CMAKE_SOURCE_DIR}/.. ${CMAKE_BINARY_DIR}/epicmeter)
 
 SET(CMAKE_BUILD_TYPE "Release")
 
@@ -19,14 +19,14 @@ INCLUDE_DIRECTORIES(
 )
 
 LINK_DIRECTORIES(
-    ${CMAKE_BINARY_DIR}/ticktack
+    ${CMAKE_BINARY_DIR}/epicmeter
 )
 
 ADD_EXECUTABLE(${PROJECT} ${HEADERS} ${SOURCES})
 
 TARGET_LINK_LIBRARIES(${PROJECT}
-    ticktack
-    ticktack-main
+    epicmeter
+    epicmeter-main
 )
 
 ADD_DEFINITIONS(-std=c++0x)

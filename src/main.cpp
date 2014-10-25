@@ -3,8 +3,8 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <ticktack/benchmark.hpp>
-#include <ticktack/output/json.hpp>
+#include <epicmeter/benchmark.hpp>
+#include <epicmeter/output/json.hpp>
 
 void help(char** argv) {
     std::cout << "Usage: " << argv[0] << " [-nxih]" << std::endl;
@@ -17,30 +17,30 @@ void help(char** argv) {
 }
 
 int main(int argc, char** argv) {
-    ticktack::options_t options;
+    epicmeter::options_t options;
     options.time.min = 1e8;
     options.time.max = 1e9;
-    options.iters = ticktack::iteration_type(1);
+    options.iters = epicmeter::iteration_type(1);
 
     int opt = 0;
-    auto& overlord = ticktack::overlord_t::instance();
+    auto& overlord = epicmeter::overlord_t::instance();
 
     while ((opt = getopt(argc, argv, "n:x:i:h:j")) != EOF) {
         switch (opt) {
         case 'n':
-            options.time.min = 1e6 * boost::lexical_cast<ticktack::nanosecond_type::value_type>(optarg);
+            options.time.min = 1e6 * boost::lexical_cast<epicmeter::nanosecond_type::value_type>(optarg);
             break;
         case 'x':
-            options.time.max = 1e6 * boost::lexical_cast<ticktack::nanosecond_type::value_type>(optarg);
+            options.time.max = 1e6 * boost::lexical_cast<epicmeter::nanosecond_type::value_type>(optarg);
             break;
         case 'i':
-            options.iters = ticktack::iteration_type(
-                boost::lexical_cast<ticktack::iteration_type::value_type>(optarg)
+            options.iters = epicmeter::iteration_type(
+                boost::lexical_cast<epicmeter::iteration_type::value_type>(optarg)
             );
             break;
         case 'j':
             overlord.output(
-                std::unique_ptr<ticktack::output::printer_t>(new ticktack::output::json_t(std::cerr))
+                std::unique_ptr<epicmeter::output::printer_t>(new epicmeter::output::json_t(std::cerr))
             );
             break;
         case 'h':

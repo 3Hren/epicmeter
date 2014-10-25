@@ -1,15 +1,15 @@
-#include "ticktack/output/table.hpp"
+#include "epicmeter/output/table.hpp"
 
 #include <cmath>
 
 #include <iomanip>
 
-#include "ticktack/compiler.hpp"
+#include "epicmeter/compiler.hpp"
 
-using namespace ticktack;
-using namespace ticktack::output;
+using namespace epicmeter;
+using namespace epicmeter::output;
 
-namespace ticktack {
+namespace epicmeter {
 
 namespace detail {
 
@@ -116,7 +116,7 @@ time(double median, double range) {
 
 } // namespace detail
 
-} // namespace ticktack
+} // namespace epicmeter
 
 table_t::table_t(std::ostream& stream) :
     stream(stream)

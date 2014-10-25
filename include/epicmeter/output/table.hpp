@@ -2,9 +2,9 @@
 
 #include <ostream>
 
-#include "ticktack/output/mod.hpp"
+#include "epicmeter/output/mod.hpp"
 
-namespace ticktack {
+namespace epicmeter {
 
 namespace output {
 
@@ -27,4 +27,4 @@ public:
 
 } // namespace output
 
-} // namespace ticktack
+} // namespace epicmeter

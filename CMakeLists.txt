@@ -1,5 +1,5 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-SET(PROJECT ticktack)
+SET(PROJECT epicmeter)
 
 # Set a consistent MACOSX_RPATH default across all CMake versions.
 # When CMake 2.8.12 is required, change this default to 1.
@@ -18,7 +18,7 @@ FILE(GLOB_RECURSE HEADERS . include/*.hpp)
 
 PROJECT(${PROJECT})
 
-ADD_LIBRARY(ticktack SHARED
+ADD_LIBRARY(epicmeter SHARED
     ${HEADERS}
     src/benchmark
     src/stats
@@ -26,7 +26,7 @@ ADD_LIBRARY(ticktack SHARED
     src/output/json
 )
 
-ADD_LIBRARY(ticktack-main
+ADD_LIBRARY(epicmeter-main
     src/main
 )
 

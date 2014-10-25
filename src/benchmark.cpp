@@ -1,21 +1,21 @@
-#include "ticktack/benchmark.hpp"
+#include "epicmeter/benchmark.hpp"
 
-#include "ticktack/output/table.hpp"
+#include "epicmeter/output/table.hpp"
 
 #include <iostream>
 
 #include <boost/optional.hpp>
 
-using namespace ticktack;
+using namespace epicmeter;
 
-class ticktack::benchmark_t {
+class epicmeter::benchmark_t {
 public:
     bool baseline;
     std::string description;
     std::function<iteration_type(iteration_type)> fn;
 };
 
-class ticktack::namespace_t {
+class epicmeter::namespace_t {
 public:
     std::vector<benchmark_t> benchmarks;
 };

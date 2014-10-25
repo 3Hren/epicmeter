@@ -6,9 +6,9 @@
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)
 
 #define TT_FUNCTOR_CLASSNAME(reg) BOOST_PP_SEQ_CAT((reg)(_t))
-#define TT_ITERTYPE ::ticktack::iteration_type
+#define TT_ITERTYPE ::epicmeter::iteration_type
 
-#define TT_REGISTRATOR_TYPE ::ticktack::builder_t
+#define TT_REGISTRATOR_TYPE ::epicmeter::builder_t
 
 #define TT_REGISTRATOR(baseline, reg, ns, cs, R, PT, PN, ...) \
     struct TT_FUNCTOR_CLASSNAME(reg) { R operator()(PT PN) const; }; \
@@ -35,6 +35,6 @@
 #endif
 #define TT_STRINGIZE(x) #x
 
-#define TT_BIND_TYPE ::ticktack::detail::bind_t
+#define TT_BIND_TYPE ::epicmeter::detail::bind_t
 #define BENCHMARK_BOUND(ns, fn, ...) \
     static TT_BIND_TYPE TT_ANONYMOUS_VARIABLE(ns##fn)(#ns, #fn"("#__VA_ARGS__")", fn, __VA_ARGS__)

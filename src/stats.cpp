@@ -1,9 +1,9 @@
-#include "ticktack/types.hpp"
+#include "epicmeter/types.hpp"
 
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
 
-using namespace ticktack;
+using namespace epicmeter;
 
 stats_t::stats_t(const samples_t& samples) :
     samples(samples)

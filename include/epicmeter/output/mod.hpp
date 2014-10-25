@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ticktack/types.hpp"
+#include "epicmeter/types.hpp"
 
-namespace ticktack {
+namespace epicmeter {
 
 namespace output {
 
@@ -21,4 +21,4 @@ public:
 
 } // namespace output
 
-} // namespace ticktack
+} // namespace epicmeter

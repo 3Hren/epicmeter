@@ -1,9 +1,9 @@
-#include "ticktack/output/json.hpp"
+#include "epicmeter/output/json.hpp"
 
-#include "ticktack/benchmark.hpp"
+#include "epicmeter/benchmark.hpp"
 
-using namespace ticktack;
-using namespace ticktack::output;
+using namespace epicmeter;
+using namespace epicmeter::output;
 
 json_t::json_t(std::ostream &stream) :
     stream(stream)

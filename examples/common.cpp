@@ -1,8 +1,8 @@
 #include <time.h>
 
-#include <ticktack/benchmark.hpp>
+#include <epicmeter/benchmark.hpp>
 
-using namespace ticktack;
+using namespace epicmeter;
 
 //!=============================================================================
 //! Common usage.
