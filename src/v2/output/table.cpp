@@ -159,7 +159,7 @@ void table_t::benchmark(const stats_t& stats) {
 }
 
 void table_t::benchmark(const stats_t& stats, const stats_t& baseline) {
-    stream << "[ ABSOLUTE ] "
+    stream << "[ RELATIVE ] "
            << std::setw(52) << std::left << current
            << std::setw(8) << std::right << std::fixed << std::setprecision(1)
            << 100 * baseline.min() / stats.min() << "%  "
