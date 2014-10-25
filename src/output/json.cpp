@@ -1,9 +1,5 @@
 #include "ticktack/output/json.hpp"
 
-#include <cmath>
-
-#include <boost/lexical_cast.hpp>
-
 #include "ticktack/benchmark.hpp"
 
 using namespace ticktack;
