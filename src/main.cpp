@@ -28,10 +28,10 @@ int main(int argc, char** argv) {
     while ((opt = getopt(argc, argv, "n:x:i:h:j")) != EOF) {
         switch (opt) {
         case 'n':
-            options.time.min = 1e6 * boost::lexical_cast<ticktack::nanosecond_type>(optarg);
+            options.time.min = 1e6 * boost::lexical_cast<ticktack::nanosecond_type::value_type>(optarg);
             break;
         case 'x':
-            options.time.max = 1e6 * boost::lexical_cast<ticktack::nanosecond_type>(optarg);
+            options.time.max = 1e6 * boost::lexical_cast<ticktack::nanosecond_type::value_type>(optarg);
             break;
         case 'i':
             options.iters = ticktack::iteration_type(

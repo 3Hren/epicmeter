@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/preprocessor.hpp>
+#include <boost/preprocessor/seq/cat.hpp>
 
 #define TT_THIRD(a, b, ...) __VA_ARGS__
 #define TT_ONE_OR_NONE(a, ...) TT_THIRD(a, ##__VA_ARGS__, a)

@@ -9,7 +9,15 @@
 
 namespace ticktack {
 
-typedef std::uint64_t nanosecond_type;
+struct nanosecond_type {
+    typedef std::uint64_t value_type;
+
+    value_type v;
+
+    nanosecond_type() : v(0) {}
+    nanosecond_type(value_type v) : v(v) {}
+};
+
 typedef std::chrono::high_resolution_clock clock_type;
 
 struct iteration_type {
@@ -18,7 +26,7 @@ struct iteration_type {
     value_type v;
 
     iteration_type() : v(0) {}
-    explicit iteration_type(value_type v) : v(v) {}
+    iteration_type(value_type v) : v(v) {}
 
     inline iteration_type& operator+=(const iteration_type& other) {
         v += other.v;
@@ -27,21 +35,24 @@ struct iteration_type {
 };
 
 struct stats_t {
-    std::array<double, 64> samples;
+    enum { size = 64 };
 
-    stats_t() {}
-    stats_t(const std::array<double, 64>& samples) :
+    typedef std::array<double, size> samples_t;
+
+    samples_t samples;
+
+    explicit stats_t(const samples_t& samples) :
         samples(samples)
     {}
 
     double median_abs_dev() const {
-        auto med = median();
+        const double median = this->median();
         std::vector<double> abs_devs;
-        for (auto s : samples) {
-            abs_devs.push_back(std::abs(med - s));
+        for (auto it = samples.begin(); it != samples.end(); ++it) {
+            abs_devs.push_back(std::abs(median - *it));
         }
 
-        return 1.4826 * medi(abs_devs);
+        return 1.4826 * this->median(abs_devs);
     }
 
     double median_abs_dev_pct() const {
@@ -49,39 +60,44 @@ struct stats_t {
     }
 
     double median() const {
-        using namespace boost::accumulators;
-        accumulator_set<double, stats<tag::median>> acc;
-        for (auto s : samples) {
-            acc(s);
-        }
-        return boost::accumulators::median(acc);
+        return median(samples);
     }
 
-    template<class T>
-    double medi(const T& samples) const {
-        using namespace boost::accumulators;
-        accumulator_set<double, stats<tag::median>> acc;
-        for (auto s : samples) {
-            acc(s);
-        }
+    template<class Collection>
+    double median(const Collection& samples) const {
+        boost::accumulators::accumulator_set<
+            double,
+            boost::accumulators::stats<
+                boost::accumulators::tag::median
+            >
+        > acc;
+
+        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
+
         return boost::accumulators::median(acc);
     }
 
     double max() const {
-        using namespace boost::accumulators;
-        accumulator_set<double, stats<tag::max>> acc;
-        for (auto s : samples) {
-            acc(s);
-        }
+        boost::accumulators::accumulator_set<
+            double,
+            boost::accumulators::stats<
+                boost::accumulators::tag::max
+            >
+        > acc;
+        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
+
         return boost::accumulators::max(acc);
     }
 
     double min() const {
-        using namespace boost::accumulators;
-        accumulator_set<double, stats<tag::min>> acc;
-        for (auto s : samples) {
-            acc(s);
-        }
+        boost::accumulators::accumulator_set<
+            double,
+            boost::accumulators::stats<
+                boost::accumulators::tag::min
+            >
+        > acc;
+        std::for_each(samples.begin(), samples.end(), std::bind(std::ref(acc), std::placeholders::_1));
+
         return boost::accumulators::min(acc);
     }
 };

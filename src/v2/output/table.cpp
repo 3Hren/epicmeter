@@ -3,6 +3,7 @@
 #include <iomanip>
 
 #include "ticktack/v2/output/table.hpp"
+#include "ticktack/compiler.hpp"
 
 using namespace ticktack;
 using namespace ticktack::output;

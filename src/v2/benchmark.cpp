@@ -87,23 +87,22 @@ stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn)
 
     iteration_type n(1); //TODO: determine min n hint.
 
-    stats_t prev;
+    stats_t prev(samples);
     while (true) {
         for (auto it = samples.begin(); it != samples.end(); ++it) {
             auto v = npi(fn, n);
-//            std::cout << v << std::endl;
             *it = v;
         }
 
         auto curr = stats_t(samples);
         auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - start).count();
-        if (elapsed > options_.time.min &&
+        if (elapsed > options_.time.min.v &&
                 prev.median_abs_dev_pct() < 1.0
                 && prev.median() - curr.median() < curr.median_abs_dev()) {
             return curr;
         }
 
-        if (elapsed >= options_.time.max) {
+        if (elapsed >= options_.time.max.v) {
             return curr;
         }
 
