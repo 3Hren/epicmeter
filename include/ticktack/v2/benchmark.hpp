@@ -25,23 +25,18 @@ struct options_t {
     iteration_type iters;
 };
 
-// Один тест кейс и его статистику выполнения.
 class benchmark_t {
 public:
     bool baseline;
     std::string description;
     std::function<iteration_type(iteration_type)> fn;
-
-//    std::array<std::tuple<double>, 64> npi; // Выборка -> | time/iter (mean +- dev) | iter/sec (mean +- dev) |
 };
 
-// Коллекция одного пространства имен тестов.
 class namespace_t {
 public:
     std::vector<benchmark_t> benchmarks;
 };
 
-// Класс для аггрегации и запуска бенчмарков.
 class overlord_t {
     std::unordered_map<std::string, namespace_t> namespaces;
 
@@ -92,7 +87,6 @@ wrap(std::function<void()> fn);
 
 } // namespace detail
 
-// RAII класс для регистрации функции для бенчмаркинга.
 class builder_t {
 public:
     template<typename Callable>
