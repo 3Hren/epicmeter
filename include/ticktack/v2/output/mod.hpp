@@ -19,6 +19,6 @@ public:
     virtual void benchmark(const stats_t& stats, const stats_t& baseline) = 0;
 };
 
-}
+} // namespace output
 
-}
+} // namespace ticktack
