@@ -10,8 +10,6 @@
 #include "epicmeter/traits.hpp"
 #include "epicmeter/types.hpp"
 
-namespace boost { template<typename> class optional; }
-
 namespace epicmeter {
 
 struct options_t {
@@ -46,7 +44,7 @@ public:
     void run();
     void run(const std::string& name, namespace_t&& ns);
     void run(const benchmark_t& benchmark);
-    void run(const benchmark_t& benchmark, boost::optional<stats_t>* baseline);
+    void run(const benchmark_t& benchmark, std::unique_ptr<stats_t>& baseline);
     stats_t run(const std::function<iteration_type(iteration_type)>& fn);
 
 private:

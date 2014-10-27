@@ -81,9 +81,9 @@ void overlord_t::run(const std::string& name, namespace_t&& ns) {
 
     if (it != ns.benchmarks.end()) {
         if (it->baseline) {
-            boost::optional<stats_t> baseline;
+            std::unique_ptr<stats_t> baseline;
             for (; it != ns.benchmarks.end(); ++it) {
-                run(*it, &baseline);
+                run(*it, baseline);
             }
         } else {
             for (; it != ns.benchmarks.end(); ++it) {
@@ -99,13 +99,13 @@ void overlord_t::run(const benchmark_t& benchmark) {
     d->out->benchmark(run(benchmark.fn));
 }
 
-void overlord_t::run(const benchmark_t& benchmark, boost::optional<stats_t>* baseline) {
+void overlord_t::run(const benchmark_t& benchmark, std::unique_ptr<stats_t>& baseline) {
     d->out->benchmark(benchmark.description);
     stats_t stats(run(benchmark.fn));
-    if (!baseline->is_initialized()) {
-        *baseline = stats;
+    if (!baseline) {
+        baseline.reset(new stats_t(stats));
     }
-    d->out->benchmark(stats, baseline->get());
+    d->out->benchmark(stats, *baseline);
 }
 
 inline
@@ -132,7 +132,7 @@ stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn)
             *it = v;
         }
 
-        auto curr = stats_t(samples);
+        stats_t curr(samples);
         auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - start).count();
         if (elapsed > d->options.time.min.v &&
                 prev.median_abs_dev_pct() < 1.0
@@ -145,6 +145,7 @@ stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn)
         }
 
         n.v *= 2;
+        prev = std::move(curr);
     }
 
     return prev;
