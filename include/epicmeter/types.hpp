@@ -3,6 +3,7 @@
 #include <array>
 #include <chrono>
 #include <cstdint>
+#include <memory>
 
 namespace epicmeter {
 
@@ -37,10 +38,17 @@ public:
     typedef std::array<double, size> samples_t;
 
 private:
-    samples_t samples;
+    class impl;
+    std::unique_ptr<impl> d;
 
 public:
+    stats_t() = delete;
     explicit stats_t(const samples_t& samples);
+    stats_t(const stats_t& other);
+    stats_t(stats_t&& other);
+    ~stats_t();
+
+    stats_t& operator=(stats_t&& other);
 
     double median() const;
     double median(const samples_t& samples) const;
