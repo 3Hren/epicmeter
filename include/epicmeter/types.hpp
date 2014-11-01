@@ -1,9 +1,9 @@
 #pragma once
 
-#include <array>
 #include <chrono>
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 namespace epicmeter {
 
@@ -33,30 +33,22 @@ struct iteration_type {
 };
 
 class stats_t {
-public:
-    enum { size = 64 };
-    typedef std::array<double, size> samples_t;
-
 private:
     class impl;
     std::unique_ptr<impl> d;
 
 public:
-    stats_t() = delete;
-    explicit stats_t(const samples_t& samples);
+    stats_t(const std::vector<double>& samples);
+
     stats_t(const stats_t& other);
     stats_t(stats_t&& other);
     ~stats_t();
 
     stats_t& operator=(stats_t&& other);
 
-    double median() const;
-    double median(const samples_t& samples) const;
-    double median_abs_dev() const;
-    double median_abs_dev_pct() const;
-
     double min() const;
     double max() const;
+    double median() const;
 };
 
 } // namespace epicmeter

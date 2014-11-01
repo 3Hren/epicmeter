@@ -108,47 +108,47 @@ void overlord_t::run(const benchmark_t& benchmark, std::unique_ptr<stats_t>& bas
     d->out->benchmark(stats, *baseline);
 }
 
+namespace {
+
 inline
-double npi(const std::function<iteration_type(iteration_type)>& fn, iteration_type times) {
+std::tuple<iteration_type, nanosecond_type::value_type>
+npi(const std::function<iteration_type(iteration_type)>& fn, iteration_type times) {
     auto started = clock_type::now();
     auto iters = fn(times);
     auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - started).count();
 
-    return (double)elapsed / iters.v;
+    return std::make_tuple(iters, elapsed);
 }
 
+} // namespace
+
 stats_t overlord_t::run(const std::function<iteration_type(iteration_type)>& fn) {
-    std::array<double, 64> samples;
-    std::fill(samples.begin(), samples.end(), 0.0);
+    std::vector<double> samples;
+    samples.reserve(1024);
 
     auto start = clock_type::now();
 
-    iteration_type n(1); //TODO: determine min n hint.
+    iteration_type n = d->options.iters;
+    iteration_type iters;
+    nanosecond_type::value_type elapsed;
+    for (std::size_t sample = 0; sample < 1024; ++sample) {
+        for (; n.v < std::numeric_limits<iteration_type::value_type>::max(); n.v *= 2) {
+            std::tie(iters, elapsed) = npi(fn, n);
+            if (elapsed < d->options.time.min.v) {
+                continue;
+            }
 
-    stats_t prev(samples);
-    while (true) {
-        for (auto it = samples.begin(); it != samples.end(); ++it) {
-            auto v = npi(fn, n);
-            *it = v;
+            samples.push_back(std::max(0.0, double(elapsed) / iters.v));
+            break;
         }
 
-        stats_t curr(samples);
-        auto elapsed = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - start).count();
-        if (elapsed > d->options.time.min.v &&
-                prev.median_abs_dev_pct() < 1.0
-                && prev.median() - curr.median() < curr.median_abs_dev()) {
-            return curr;
+        auto total = std::chrono::duration_cast<std::chrono::nanoseconds>(clock_type::now() - start).count();
+        if (total >= d->options.time.max.v) {
+            break;
         }
-
-        if (elapsed >= d->options.time.max.v) {
-            return curr;
-        }
-
-        n.v *= 2;
-        prev = std::move(curr);
     }
 
-    return prev;
+    return stats_t(samples);
 }
 
 namespace {
