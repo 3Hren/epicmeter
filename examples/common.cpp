@@ -6,9 +6,6 @@
 
 using namespace epicmeter;
 
-//BENCHMARK(DatetimeGeneration, strftime, native, samples = 30; count = 100000; description = "Very long description") {
-//}
-
 //!=============================================================================
 //! Common usage.
 BENCHMARK(DatetimeFormatting, strftime) {
